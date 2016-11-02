@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
             // Add the fragment to the 'fragment_container' FrameLayout
-            getFragmentManager().beginTransaction()
+                     getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, new MainActivityFragment()).commit();
         }
     }
