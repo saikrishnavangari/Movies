@@ -20,18 +20,18 @@ public class Movies {
         this.results = results;
     }
 
-    public  class results  implements Parcelable{
-        String poster_path;
-        String overview;
-        String release_date;
-        int id;
-        String original_title;
-        String original_language;
-        String title;
-        String backdrop_path;
-        double popularity;
-        int vote_count;
-        double vote_average;
+    public static class results  implements Parcelable{
+       private String poster_path;
+        private String overview;
+        private String release_date;
+        private int id;
+        private String original_title;
+        private String original_language;
+        private String title;
+        private  String backdrop_path;
+        private double popularity;
+        private int vote_count;
+        private  double vote_average;
 
         private results(Parcel in) {
             poster_path = in.readString();
@@ -47,7 +47,7 @@ public class Movies {
             vote_average = in.readDouble();
         }
 
-        public  final Parcelable.Creator<results> CREATOR = new Creator<results>() {
+        public static final Parcelable.Creator<results> CREATOR = new Creator<results>() {
             @Override
             public results createFromParcel(Parcel in) {
                 return new results(in);
@@ -174,13 +174,13 @@ public class Movies {
             parcel.writeString(poster_path);
             parcel.writeString(overview);
             parcel.writeString(release_date);
+            parcel.writeInt(id);
             parcel.writeString(original_title);
             parcel.writeString(original_language);
             parcel.writeString(title);
             parcel.writeString(backdrop_path);
-            parcel.writeInt(id);
-            parcel.writeInt(vote_count);
             parcel.writeDouble(popularity);
+            parcel.writeInt(vote_count);
             parcel.writeDouble(vote_average);
 
         }

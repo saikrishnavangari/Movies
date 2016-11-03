@@ -1,10 +1,14 @@
 package sai.com.popularmovies;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -31,9 +35,32 @@ public class MainActivityFragment extends Fragment {
     private View rootview;
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.Settings:
+                Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(settingsIntent);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+
     }
 
     @Nullable
@@ -41,10 +68,10 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootview = inflater.inflate(R.layout.fragemnt_main, container, false);
-        if(NetworkConnection.isOnline(getActivity()))
-        loadData();
+        if (NetworkConnection.isOnline(getActivity()))
+            loadData();
         else
-            Toast.makeText(getActivity(),"no Internet Connection",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "no Internet Connection", Toast.LENGTH_SHORT).show();
         return rootview;
     }
 
@@ -62,6 +89,7 @@ public class MainActivityFragment extends Fragment {
                 Log.d(LOG_TAG, "success");
                 update_ui(response);
             }
+
             @Override
             public void onFailure(Call<Movies> call, Throwable t) {
 
@@ -69,14 +97,14 @@ public class MainActivityFragment extends Fragment {
         });
     }
 
-//    build and load the data into layout
-    void update_ui(Response<Movies> response){
-        Movies movies=response.body();
-        final List<Movies.results> moviesList=movies.getResults();
-        GridView gridview= (GridView) rootview.findViewById(R.id.gridview);
-        GridItemImageAdapter gridAdapter=new GridItemImageAdapter(getActivity(),0,moviesList);
+    //    build and load the data into layout
+    void update_ui(Response<Movies> response) {
+        Movies movies = response.body();
+        final List<Movies.results> moviesList = movies.getResults();
+        GridView gridview = (GridView) rootview.findViewById(R.id.gridview);
+        GridItemImageAdapter gridAdapter = new GridItemImageAdapter(getActivity(), 0, moviesList);
         gridview.setAdapter(gridAdapter);
-        for (Movies.results movie:moviesList){
+        for (Movies.results movie : moviesList) {
             Log.d(LOG_TAG, movie.toString());
         }
 
@@ -86,7 +114,11 @@ public class MainActivityFragment extends Fragment {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                   Movies.results movieObject= moviesList.get(i);
+                Movies.results movieObject = moviesList.get(i);
+                Log.d(LOG_TAG, "movieObject :" + movieObject.toString());
+                Intent MovieDetailIntent = new Intent(getActivity(), MovieDetail.class);
+                MovieDetailIntent.putExtra("movieObject", movieObject);
+                startActivity(MovieDetailIntent);
             }
         });
     }
