@@ -26,6 +26,7 @@ public class MovieDetailFragment extends Fragment {
     @BindView(R.id.title) TextView title_TV;
     @BindView(R.id.release_date) TextView release_date_TV;
     @BindView(R.id.language) TextView languge_TV;
+    @BindView(R.id.movie_overview) TextView movie_overview_TV;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,10 +39,12 @@ public class MovieDetailFragment extends Fragment {
         results movieObject=((MovieDetail)getActivity()).getMovieObject();
         View rootview=inflater.inflate(R.layout.fragment_movie_detail,container,false);
         ButterKnife.bind(this, rootview);
-        Picasso.with(getActivity()).load(MainActivity.IMAGE_BASE_URL+
+        Picasso.with(getActivity()).load(MainActivity.IMAGE_BASE_URL+"w342/"+
                 movieObject.getPoster_path()).into(poster_image_IV);
         title_TV.setText(movieObject.getOriginal_title());
+        release_date_TV.setText(movieObject.getRelease_date());
         languge_TV.setText(movieObject.getOriginal_language());
+        movie_overview_TV.setText(movieObject.getOverview());
         return rootview;
 
     }

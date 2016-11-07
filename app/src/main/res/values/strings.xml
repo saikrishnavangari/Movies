@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">PopularMovies</string>
-    <string name="pref_syncConnectionType">movie_type</string>
-    <string name="pref_syncConnectionTypes_default">movie_type_values</string>
     <string name="settings">Settings</string>
-    <string name="settings_movietype_title">Movie Type</string>
+    <string name="pref_movie_type_key">movie_type</string>
+    <string name="pref_movie_type_default">popular</string>
+    <string name="settings_movietype_title">MovieType</string>
+    <string name="posterimage">posterImage</string>
+    <string name="release_date_text">Release date :</string>
+    <string name="movie_title_text">Title :</string>
+    <string name="movie_description">Description :</string>
 </resources>
