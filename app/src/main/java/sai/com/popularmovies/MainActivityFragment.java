@@ -46,7 +46,6 @@ public class MainActivityFragment extends Fragment {
     private String movie_type;
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -82,10 +81,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootview = inflater.inflate(R.layout.fragemnt_main, container, false);
-        if (NetworkConnection.isOnline(getActivity()))
-            loadData();
-        else
-            Toast.makeText(getActivity(), "no Internet Connection", Toast.LENGTH_SHORT).show();
         return rootview;
     }
 
@@ -95,33 +90,29 @@ public class MainActivityFragment extends Fragment {
         setMovie_type(sharedPrefernces.getString(
                 getString(R.string.pref_movie_type_key),
                 getString(R.string.pref_movie_type_default)));
-        Log.d(LOG_TAG, "movie/TYpe" +movie_type);
-        switch (getmovie_type()) {
-            case "top_rated":
-                getActivity().setTitle("Top Rated Movies");
-                Log.d(LOG_TAG, "movie/TYpe" +getmovie_type());
-                break;
-            default:
-                getActivity().setTitle("Popular Movies");
-        }
+        Log.d(LOG_TAG, "movie/TYpe" + movie_type);
 
 
         Call<Movies> call = restApi.getPopularMovies(movie_type, MainActivity.API_KEY, "en-US");
         call.enqueue(new Callback<Movies>() {
-            @Override
-            public void onResponse(Call<Movies> call, Response<Movies> response) {
-                Log.d(LOG_TAG, "success");
-                update_ui(response);
-            }
+                         @Override
+                         public void onResponse(Call<Movies> call, Response<Movies> response) {
+                             Log.d(LOG_TAG, "success");
+                             update_ui(response);
+                         }
 
-            @Override
-            public void onFailure(Call<Movies> call, Throwable t) {
+                         @Override
+                         public void onFailure(Call<Movies> call, Throwable t) {
 
-            }
-        });
+                         }
+                     }
+
+        );
     }
 
-    //    build and load the data into layout
+
+        //    build and load the data into layout
+
     void update_ui(Response<Movies> response) {
         Movies movies = response.body();
         final List<Movies.results> moviesList = movies.getResults();
@@ -151,12 +142,21 @@ public class MainActivityFragment extends Fragment {
         Log.d(LOG_TAG, "movietype :" + movie_type);
         return movie_type;
     }*/
-
+    void setScreenTitle() {
+        switch (getmovie_type()) {
+            case "top_rated":
+                getActivity().setTitle("Top Rated Movies");
+                Log.d(LOG_TAG, "movie/TYpe" + getmovie_type());
+                break;
+            default:
+                getActivity().setTitle("Popular Movies");
+        }
+    }
 
     public String getmovie_type() {
         if (movie_type == null)
             movie_type = "popular";
-            return movie_type;
+        return movie_type;
     }
 
     public void setMovie_type(String movie_type) {
@@ -165,10 +165,8 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(SettingsChangeEvent event)
-    {
+    public void onMessageEvent(SettingsChangeEvent event) {
         setMovie_type(event.getMovie_type());
-        loadData();
     }
 
 
@@ -176,16 +174,18 @@ public class MainActivityFragment extends Fragment {
     public void onStart() {
         super.onStart();
         Log.d(LOG_TAG, "inside onstart");
-        if(!EventBus.getDefault().hasSubscriberForEvent( SettingsChangeEvent.class))
-        EventBus.getDefault().register(this);
-
-
+        if (!EventBus.getDefault().hasSubscriberForEvent(SettingsChangeEvent.class))
+            EventBus.getDefault().register(this);
+        if (NetworkConnection.isOnline(getActivity()))
+            loadData();
+        else
+            Toast.makeText(getActivity(), "no Internet Connection", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
+        setScreenTitle();
         Log.d(LOG_TAG, "inside onResume");
 
     }
@@ -200,7 +200,7 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onStop() {
-         super.onStop();
+        super.onStop();
 
         Log.d(LOG_TAG, "inside onstop");
     }
