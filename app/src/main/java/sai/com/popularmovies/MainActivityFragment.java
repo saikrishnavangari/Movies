@@ -81,7 +81,6 @@ public class MainActivityFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "inside oncreateview");
         rootview = inflater.inflate(R.layout.fragemnt_main, container, false);
         if (NetworkConnection.isOnline(getActivity()))
             loadData();
@@ -155,7 +154,7 @@ public class MainActivityFragment extends Fragment {
 
 
     public String getmovie_type() {
-        if (movie_type != null)
+        if (movie_type == null)
             movie_type = "popular";
             return movie_type;
     }
@@ -169,7 +168,7 @@ public class MainActivityFragment extends Fragment {
     public void onMessageEvent(SettingsChangeEvent event)
     {
         setMovie_type(event.getMovie_type());
-        Log.d(LOG_TAG,movie_type);
+        loadData();
     }
 
 
@@ -177,6 +176,7 @@ public class MainActivityFragment extends Fragment {
     public void onStart() {
         super.onStart();
         Log.d(LOG_TAG, "inside onstart");
+        if(!EventBus.getDefault().hasSubscriberForEvent( SettingsChangeEvent.class))
         EventBus.getDefault().register(this);
 
 
@@ -201,14 +201,14 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onStop() {
          super.onStop();
-        EventBus.getDefault().unregister(this);
+
         Log.d(LOG_TAG, "inside onstop");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        EventBus.getDefault().unregister(this);
         Log.d(LOG_TAG, "inside onDestroy");
 
     }
