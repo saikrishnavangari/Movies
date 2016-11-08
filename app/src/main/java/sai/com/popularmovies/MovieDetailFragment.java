@@ -25,7 +25,7 @@ public class MovieDetailFragment extends Fragment {
     @BindView(R.id.poster_image) ImageView poster_image_IV;
     @BindView(R.id.title) TextView title_TV;
     @BindView(R.id.release_date) TextView release_date_TV;
-    @BindView(R.id.language) TextView languge_TV;
+    @BindView(R.id.vote_average) TextView vote_average_TV;
     @BindView(R.id.movie_overview) TextView movie_overview_TV;
 
     @Override
@@ -43,7 +43,7 @@ public class MovieDetailFragment extends Fragment {
                 movieObject.getPoster_path()).into(poster_image_IV);
         title_TV.setText(movieObject.getOriginal_title());
         release_date_TV.setText(movieObject.getRelease_date());
-        languge_TV.setText(movieObject.getOriginal_language());
+        vote_average_TV.setText(String.valueOf(movieObject.getVote_average()));
         movie_overview_TV.setText(movieObject.getOverview());
         return rootview;
 

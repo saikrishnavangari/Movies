@@ -39,22 +39,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/release_date_text"
-            android:id="@+id/release_date_text"
+            android:id="@+id/release_date_label"
             android:layout_toEndOf="@id/poster_image"
             android:layout_below="@+id/title"
             android:textSize="16sp"/>
         <TextView
             android:layout_below="@+id/title"
-            android:layout_toEndOf="@id/release_date_text"
+            android:layout_toEndOf="@id/release_date_label"
             android:id="@+id/release_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
+
         <TextView
             android:layout_below="@+id/release_date"
             android:layout_toEndOf="@id/poster_image"
-            android:id="@+id/language"
+            android:id="@+id/vote_average_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/vote_average_label"/>
+        <TextView
+            android:layout_below="@+id/release_date"
+            android:layout_toEndOf="@id/vote_average_label"
+            android:id="@+id/vote_average"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp" />

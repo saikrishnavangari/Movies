@@ -6,7 +6,7 @@ import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String API_KEY = "8496be0b2149805afa458ab8ec27560c";
+    public static final String API_KEY = "";
     public static final String BASE_URL = "https://api.themoviedb.org/3/";
     public static final String IMAGE_BASE_URL = "http://image.tmdb.org/t/p/";
     private static final String LOG_TAG = MainActivity.class.getSimpleName();

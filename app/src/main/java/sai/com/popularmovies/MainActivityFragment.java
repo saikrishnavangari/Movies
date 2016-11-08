@@ -44,6 +44,7 @@ public class MainActivityFragment extends Fragment {
     private RestApi restApi;
     private View rootview;
     private String movie_type;
+    private List<Movies.results> moviesList;
 
 
     @Override
@@ -98,7 +99,9 @@ public class MainActivityFragment extends Fragment {
                          @Override
                          public void onResponse(Call<Movies> call, Response<Movies> response) {
                              Log.d(LOG_TAG, "success");
-                             update_ui(response);
+                             Movies movies = response.body();
+                             moviesList = movies.getResults();
+                             update_ui();
                          }
 
                          @Override
@@ -113,9 +116,8 @@ public class MainActivityFragment extends Fragment {
 
         //    build and load the data into layout
 
-    void update_ui(Response<Movies> response) {
-        Movies movies = response.body();
-        final List<Movies.results> moviesList = movies.getResults();
+    void update_ui() {
+
         GridView gridview = (GridView) rootview.findViewById(R.id.gridview);
         GridItemImageAdapter gridAdapter = new GridItemImageAdapter(getActivity(), 0, moviesList);
         gridview.setAdapter(gridAdapter);
