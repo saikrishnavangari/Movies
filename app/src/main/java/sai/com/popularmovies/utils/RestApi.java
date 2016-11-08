@@ -2,6 +2,7 @@ package sai.com.popularmovies.utils;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import sai.com.popularmovies.Model.Movies;
 
@@ -11,8 +12,10 @@ import sai.com.popularmovies.Model.Movies;
 
 public interface RestApi {
 
-@GET ("movie/popular")
-    Call<Movies> getPopularMovies(@Query("api_key") String api_key,
-                                  @Query("language") String language);
+    @GET("movie/{movie_type}")
+    Call<Movies> getPopularMovies(
+            @Path("movie_type") String movie_type,
+            @Query("api_key") String api_key,
+            @Query("language") String language);
 
 }

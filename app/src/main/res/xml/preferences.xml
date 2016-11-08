@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <ListPreference
-        android:key="movie_type"
+        android:key="@string/pref_movie_type_key"
         android:title="@string/settings_movietype_title"
         android:entries="@array/movie_type"
         android:entryValues="@array/movie_type_values"
-        android:defaultValue="@string/pref_syncConnectionTypes_default" />
+        android:defaultValue="@string/pref_movie_type_default" />
 </PreferenceScreen>

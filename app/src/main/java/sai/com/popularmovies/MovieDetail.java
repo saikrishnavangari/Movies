@@ -27,6 +27,14 @@ public class MovieDetail extends AppCompatActivity {
             {
                 Intent intent=getIntent();
                 movieObject= intent.getParcelableExtra("movieObject");
+                String movie_type=intent.getStringExtra("movie_type") ;
+                switch (movie_type) {
+                    case "top_rated":
+                        setTitle("Top Rated Movies");
+                        break;
+                    default:
+                        setTitle("Popular Movies");
+                }
             }
             // Add the fragment to the 'fragment_movieDetail_container' FrameLayout
             getFragmentManager().beginTransaction()

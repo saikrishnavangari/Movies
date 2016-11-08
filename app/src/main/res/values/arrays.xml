@@ -7,6 +7,6 @@
 
     <string-array name="movie_type_values">
         <item>popular</item>
-        <item>toprated</item>
+        <item>top_rated</item>
     </string-array>
 </resources>
