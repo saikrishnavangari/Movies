@@ -58,7 +58,8 @@ GridItemImageAdapter extends ArrayAdapter<results> {
         }
         ButterKnife.bind(this,listItemView);
         //load image into imageView
-        Picasso.with(mcontext).load(MainActivity.IMAGE_BASE_URL+"w185/"+mMoviesList.get(i).getPoster_path()).into(moviePoster);
+        Picasso.with(mcontext).load(MainActivity.IMAGE_BASE_URL+"w185/"+mMoviesList.get(i).getPoster_path())
+                .into(moviePoster);
         title_tv.setText(mMoviesList.get(i).getOriginal_title());
         return listItemView;
     }

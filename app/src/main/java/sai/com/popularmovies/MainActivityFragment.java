@@ -100,6 +100,7 @@ public class MainActivityFragment extends Fragment {
                          public void onResponse(Call<Movies> call, Response<Movies> response) {
                              Log.d(LOG_TAG, "success");
                              Movies movies = response.body();
+                             Log.d(LOG_TAG,"movies: "+ response.body());
                              moviesList = movies.getResults();
                              update_ui();
                          }
