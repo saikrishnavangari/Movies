@@ -13,43 +13,30 @@ import sai.com.popularmovies.Model.Movies.results;
 
 public class MovieDetail extends AppCompatActivity {
     private results movieObject;
+    public static final String Movie_ID = "movie_id";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        if (findViewById(R.id.fragment_movieDetail_container) != null) {
-            if (savedInstanceState != null) {
-                movieObject=savedInstanceState.getParcelable("movieObject");
-            }
-            else
-            {
-                Intent intent=getIntent();
-                movieObject= intent.getParcelableExtra("movieObject");
-                String movie_type=intent.getStringExtra("movie_type") ;
-                switch (movie_type) {
-                    case "top_rated":
-                        setTitle("Top Rated Movies");
-                        break;
-                    default:
-                        setTitle("Popular Movies");
-                }
-            }
+        if (savedInstanceState == null) {
+            Bundle arguments = new Bundle();
+            Intent intent = getIntent();
+            movieObject = intent.getParcelableExtra("movieObject");
+            arguments.putParcelable(MovieDetailFragment.MOVIEOBJECT, movieObject);
+            String movie_type = intent.getStringExtra("movie_type");
+
+            MovieDetailFragment fragment=new MovieDetailFragment();
+            fragment.setArguments(arguments);
             // Add the fragment to the 'fragment_movieDetail_container' FrameLayout
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_movieDetail_container, new MovieDetailFragment()).commit();
+                    .add(R.id.fragment_movieDetail_container, fragment).commit();
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable("movieObject",movieObject);
-        super.onSaveInstanceState(outState);
-    }
 
     public results getMovieObject() {
-
         return movieObject;
     }
 }

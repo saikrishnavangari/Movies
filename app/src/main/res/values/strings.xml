@@ -9,4 +9,10 @@
     <string name="movie_title_text">Title :</string>
     <string name="movie_description">Description :</string>
     <string name="vote_average_label">Vote average :</string>
+    <string name="movie_detail_label">MovieDetail</string>
+    <string name="trailer_text">Trailers :</string>
+    <string name="trailer_text1">Trailer 1</string>
+    <string name="trailer_text2">Trailer 2</string>
+    <string name="favourite_text">Mark as"\n"favourite</string>
+    <string name="favourite_text_remove">remove from"\n"favourites?</string>
 </resources>

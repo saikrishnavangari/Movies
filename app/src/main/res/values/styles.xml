@@ -8,4 +8,19 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="Divider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@android:color/black</item>
+    </style>
+    <style name="MovieDetail_Title_Textview" parent="android:TextAppearance">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">-16dp</item>
+        <item name="android:paddingRight">-16dp</item>
+        <item name="android:paddingTop">-8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:background">@color/color_movie_detail_titleText</item>
+
+    </style>
 </resources>

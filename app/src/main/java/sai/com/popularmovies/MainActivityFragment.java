@@ -1,10 +1,11 @@
 package sai.com.popularmovies;
 
 import android.app.Fragment;
+import android.content.ContentProviderOperation;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.OperationApplicationException;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,24 +16,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import sai.com.popularmovies.Adapters.GridItemImageAdapter;
-import sai.com.popularmovies.Connectivity.NetworkConnection;
 import sai.com.popularmovies.Model.Movies;
-import sai.com.popularmovies.event.SettingsChangeEvent;
+import sai.com.popularmovies.data.MoviesColumns;
+import sai.com.popularmovies.data.MoviesProvider;
 import sai.com.popularmovies.utils.RestApi;
+import sai.com.popularmovies.utils.Utilities;
 
 /**
  * Created by krrish on 1/11/2016.
@@ -40,11 +37,11 @@ import sai.com.popularmovies.utils.RestApi;
 
 public class MainActivityFragment extends Fragment {
     private static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
-    private Retrofit retrofit;
-    private RestApi restApi;
+    private static String MOVIE_TYPE_KEY="movie_type";
+    private static String MOVIE_LIST_KEY="movieListArrayKey";
     private View rootview;
     private String movie_type;
-    private List<Movies.results> moviesList;
+    private ArrayList<Movies.results> moviesList = new ArrayList<Movies.results>();
 
 
     @Override
@@ -52,11 +49,7 @@ public class MainActivityFragment extends Fragment {
 
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        retrofit = new Retrofit.Builder()
-                .baseUrl(MainActivity.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        restApi = retrofit.create(RestApi.class);
+        Log.d(LOG_TAG, "inside on create ");
     }
 
     @Override
@@ -70,6 +63,7 @@ public class MainActivityFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.Settings:
                 Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+                settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(settingsIntent);
             default:
 
@@ -81,26 +75,33 @@ public class MainActivityFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(LOG_TAG, "inside oncreateView");
         rootview = inflater.inflate(R.layout.fragemnt_main, container, false);
         return rootview;
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            moviesList = savedInstanceState.getParcelableArrayList(MOVIE_LIST_KEY);
+            movie_type=savedInstanceState.getString(MOVIE_TYPE_KEY);
+            update_ui();
+        }
+
+    }
+
     //build retrofit and load user preferred data to update the ui
     private void loadData() {
-        SharedPreferences sharedPrefernces = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        setMovie_type(sharedPrefernces.getString(
-                getString(R.string.pref_movie_type_key),
-                getString(R.string.pref_movie_type_default)));
-        Log.d(LOG_TAG, "movie/TYpe" + movie_type);
-
-
+        movie_type = Utilities.getPreferredMovieType(getActivity());
+        RestApi restApi = Utilities.getRetrofit();
         Call<Movies> call = restApi.getPopularMovies(movie_type, MainActivity.API_KEY, "en-US");
         call.enqueue(new Callback<Movies>() {
                          @Override
                          public void onResponse(Call<Movies> call, Response<Movies> response) {
                              Log.d(LOG_TAG, "success");
                              Movies movies = response.body();
-                             Log.d(LOG_TAG,"movies: "+ response.body());
+                             Log.d(LOG_TAG, "movies: " + response.body());
                              moviesList = movies.getResults();
                              update_ui();
                          }
@@ -114,16 +115,50 @@ public class MainActivityFragment extends Fragment {
         );
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(MOVIE_LIST_KEY, moviesList);
+        outState.putString(MOVIE_TYPE_KEY, movie_type);
+    }
 
-        //    build and load the data into layout
+    public void inserData() {
+        Log.d(LOG_TAG, "insert");
+        ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(moviesList.size());
+
+        for (Movies.results movieObject : moviesList) {
+            ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
+                    MoviesProvider.Movies.CONTENT_URI);
+            builder.withValue(MoviesColumns.Column_movieId, movieObject.getId());
+            builder.withValue(MoviesColumns.Column_TITLE, movieObject.getOriginal_title());
+            builder.withValue(MoviesColumns.Column_voteCount, movieObject.getVote_count());
+            builder.withValue(MoviesColumns.Column_posterPath, movieObject.getPoster_path());
+            builder.withValue(MoviesColumns.Column_overview, movieObject.getOverview());
+            builder.withValue(MoviesColumns.Column_popularity, movieObject.getPopularity());
+            builder.withValue(MoviesColumns.Column_voteAverage, movieObject.getVote_average());
+            builder.withValue(MoviesColumns.Column_language, movieObject.getOriginal_language());
+            builder.withValue(MoviesColumns.Column_backdropPath, movieObject.getBackdrop_path());
+            builder.withValue(MoviesColumns.Column_releaseDate, movieObject.getRelease_date());
+
+            batchOperations.add(builder.build());
+        }
+
+        try {
+            getActivity().getContentResolver().applyBatch(MoviesProvider.AUTHORITY, batchOperations);
+        } catch (RemoteException | OperationApplicationException e) {
+            Log.e(LOG_TAG, "Error applying batch insert", e);
+        }
+
+    }
+
+
+    //    build and load the data into layout
 
     void update_ui() {
 
         GridView gridview = (GridView) rootview.findViewById(R.id.gridview);
         GridItemImageAdapter gridAdapter = new GridItemImageAdapter(getActivity(), 0, moviesList);
         gridview.setAdapter(gridAdapter);
-        //set onitemClickListener on gridview
-
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -131,7 +166,6 @@ public class MainActivityFragment extends Fragment {
                 Log.d(LOG_TAG, "movieObject :" + movieObject.toString());
                 Intent MovieDetailIntent = new Intent(getActivity(), MovieDetail.class);
                 MovieDetailIntent.putExtra("movieObject", movieObject);
-                MovieDetailIntent.putExtra("movie_type", getmovie_type());
                 startActivity(MovieDetailIntent);
             }
         });
@@ -146,43 +180,25 @@ public class MainActivityFragment extends Fragment {
         return movie_type;
     }*/
     void setScreenTitle() {
-        switch (getmovie_type()) {
+        switch (Utilities.getPreferredMovieType(getActivity())) {
             case "top_rated":
                 getActivity().setTitle("Top Rated Movies");
-                Log.d(LOG_TAG, "movie/TYpe" + getmovie_type());
                 break;
             default:
                 getActivity().setTitle("Popular Movies");
         }
     }
 
-    public String getmovie_type() {
-        if (movie_type == null)
-            movie_type = "popular";
-        return movie_type;
-    }
-
-    public void setMovie_type(String movie_type) {
-
-        this.movie_type = movie_type;
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(SettingsChangeEvent event) {
-        setMovie_type(event.getMovie_type());
-    }
-
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(LOG_TAG, "inside onstart");
-        if (!EventBus.getDefault().hasSubscriberForEvent(SettingsChangeEvent.class))
-            EventBus.getDefault().register(this);
-        if (NetworkConnection.isOnline(getActivity()))
+        Log.d(LOG_TAG, "onstart");
+
+        if (movie_type != Utilities.getPreferredMovieType(getActivity())) {
+            Log.d(LOG_TAG, "loading in onstart");
             loadData();
-        else
-            Toast.makeText(getActivity(), "no Internet Connection", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -204,7 +220,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-
         Log.d(LOG_TAG, "inside onstop");
     }
 
@@ -213,7 +228,6 @@ public class MainActivityFragment extends Fragment {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         Log.d(LOG_TAG, "inside onDestroy");
-
     }
 
 

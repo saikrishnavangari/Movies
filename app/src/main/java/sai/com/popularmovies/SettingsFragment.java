@@ -7,10 +7,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import org.greenrobot.eventbus.EventBus;
-
-import sai.com.popularmovies.event.SettingsChangeEvent;
-
 /**
  * Created by krrish on 2/11/2016.
  */
@@ -39,7 +35,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     public boolean onPreferenceChange(Preference preference, Object o) {
         String value=o.toString();
         preference.setSummary(value);
-        EventBus.getDefault().post(new SettingsChangeEvent(value));
         return true;
     }
 
