@@ -3,20 +3,20 @@ package sai.com.popularmovies.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by krrish on 1/11/2016.
  */
 
 public class Movies {
-    List<results> results;
+    ArrayList<results> results;
 
-    public List<results> getResults() {
+    public ArrayList<results> getResults() {
         return results;
     }
 
-    public void setMovies(List<results> results) {
+    public void setMovies(ArrayList<results> results) {
         this.results = results;
     }
 
