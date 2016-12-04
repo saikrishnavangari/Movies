@@ -1,11 +1,9 @@
 package sai.com.popularmovies;
 
 import android.app.Fragment;
-import android.content.ContentProviderOperation;
 import android.content.Intent;
-import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -94,25 +92,52 @@ public class MainActivityFragment extends Fragment {
     //build retrofit and load user preferred data to update the ui
     private void loadData() {
         movie_type = Utilities.getPreferredMovieType(getActivity());
-        RestApi restApi = Utilities.getRetrofit();
-        Call<Movies> call = restApi.getPopularMovies(movie_type, MainActivity.API_KEY, "en-US");
-        call.enqueue(new Callback<Movies>() {
-                         @Override
-                         public void onResponse(Call<Movies> call, Response<Movies> response) {
-                             Log.d(LOG_TAG, "success");
-                             Movies movies = response.body();
-                             Log.d(LOG_TAG, "movies: " + response.body());
-                             moviesList = movies.getResults();
-                             update_ui();
+        if(!movie_type.equals("favourites")) {
+            RestApi restApi = Utilities.getRetrofit();
+            Call<Movies> call = restApi.getPopularMovies(movie_type, MainActivity.API_KEY, "en-US");
+            call.enqueue(new Callback<Movies>() {
+                             @Override
+                             public void onResponse(Call<Movies> call, Response<Movies> response) {
+                                 Log.d(LOG_TAG, "success");
+                                 Movies movies = response.body();
+                                 Log.d(LOG_TAG, "movies: " + response.body());
+                                 moviesList = movies.getResults();
+                                 update_ui();
+                             }
+
+                             @Override
+                             public void onFailure(Call<Movies> call, Throwable t) {
+
+                             }
                          }
 
-                         @Override
-                         public void onFailure(Call<Movies> call, Throwable t) {
+            );
+        }
+        else{
 
-                         }
-                     }
+            Cursor cursor=getActivity().getContentResolver().query(MoviesProvider.Movies.CONTENT_URI,
+                    null,null,null,null);
+            getMovieList(cursor);
+            update_ui();
+        }
+    }
 
-        );
+    private void getMovieList(Cursor cursor) {
+        Log.d(LOG_TAG,String.valueOf(cursor.getCount()));
+        while(cursor.moveToNext()){
+            Log.d(LOG_TAG,cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_overview)));
+            Movies.results movieObject= new Movies.results();
+            movieObject.setId(cursor.getInt(cursor.getColumnIndex(MoviesColumns.Column_movieId)));
+            movieObject.setTitle(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_TITLE)));
+            movieObject.setVote_count(cursor.getInt(cursor.getColumnIndex(MoviesColumns.Column_voteCount)));
+            movieObject.setVote_average(cursor.getInt(cursor.getColumnIndex(MoviesColumns.Column_voteAverage)));
+            movieObject.setBackdrop_path(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_backdropPath)));
+            movieObject.setOriginal_language(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_language)));
+            movieObject.setPopularity(cursor.getInt(cursor.getColumnIndex(MoviesColumns.Column_popularity)));
+           // movieObject.setOverview(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_overview)));
+            movieObject.setRelease_date(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_releaseDate)));
+
+        }
     }
 
     @Override
@@ -122,34 +147,6 @@ public class MainActivityFragment extends Fragment {
         outState.putString(MOVIE_TYPE_KEY, movie_type);
     }
 
-    public void inserData() {
-        Log.d(LOG_TAG, "insert");
-        ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>(moviesList.size());
-
-        for (Movies.results movieObject : moviesList) {
-            ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
-                    MoviesProvider.Movies.CONTENT_URI);
-            builder.withValue(MoviesColumns.Column_movieId, movieObject.getId());
-            builder.withValue(MoviesColumns.Column_TITLE, movieObject.getOriginal_title());
-            builder.withValue(MoviesColumns.Column_voteCount, movieObject.getVote_count());
-            builder.withValue(MoviesColumns.Column_posterPath, movieObject.getPoster_path());
-            builder.withValue(MoviesColumns.Column_overview, movieObject.getOverview());
-            builder.withValue(MoviesColumns.Column_popularity, movieObject.getPopularity());
-            builder.withValue(MoviesColumns.Column_voteAverage, movieObject.getVote_average());
-            builder.withValue(MoviesColumns.Column_language, movieObject.getOriginal_language());
-            builder.withValue(MoviesColumns.Column_backdropPath, movieObject.getBackdrop_path());
-            builder.withValue(MoviesColumns.Column_releaseDate, movieObject.getRelease_date());
-
-            batchOperations.add(builder.build());
-        }
-
-        try {
-            getActivity().getContentResolver().applyBatch(MoviesProvider.AUTHORITY, batchOperations);
-        } catch (RemoteException | OperationApplicationException e) {
-            Log.e(LOG_TAG, "Error applying batch insert", e);
-        }
-
-    }
 
 
     //    build and load the data into layout

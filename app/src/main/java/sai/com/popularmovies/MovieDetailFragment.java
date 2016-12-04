@@ -225,7 +225,7 @@ public class MovieDetailFragment extends Fragment {
             values.put(MoviesColumns.Column_TITLE, mMovieObject.getTitle());
             values.put(MoviesColumns.Column_voteCount, mMovieObject.getVote_count());
             values.put(MoviesColumns.Column_posterPath, mMovieObject.getPoster_path());
-            values.put(MoviesColumns.Column_overview, mMovieObject.getOverview());
+            values.put(MoviesColumns.Column_overview, (mMovieObject.getOverview()).toString());
             values.put(MoviesColumns.Column_popularity, mMovieObject.getPopularity());
             values.put(MoviesColumns.Column_voteAverage, mMovieObject.getVote_average());
             values.put(MoviesColumns.Column_language, mMovieObject.getOriginal_language());
@@ -235,9 +235,9 @@ public class MovieDetailFragment extends Fragment {
             Cursor cursor=getActivity().getContentResolver().query(MoviesProvider.Movies.CONTENT_URI,null,
                     null,null,null);
             while (cursor.moveToNext()){
-                Log.d(LOG_TAG,cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_TITLE)));
+                Log.d(LOG_TAG,cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_overview)));
             }
-
+            cursor.close();
         }
         else {
             button.setText(R.string.favourite_text);

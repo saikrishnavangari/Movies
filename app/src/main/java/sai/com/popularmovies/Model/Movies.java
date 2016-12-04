@@ -33,6 +33,9 @@ public class Movies {
         private int vote_count;
         private  double vote_average;
 
+        public results(){
+
+        }
         private results(Parcel in) {
             poster_path = in.readString();
             overview = in.readString();
