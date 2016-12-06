@@ -31,7 +31,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="16dp">
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -55,6 +56,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/title"
                     android:layout_toRightOf="@id/poster_image"
+                    android:paddingLeft="16dp"
                     android:text="@string/movie_title_text"
                     android:textSize="16sp" />
 
@@ -62,7 +64,9 @@
                     android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/release_date"
                     android:layout_toRightOf="@id/movie_title_text"
+                    android:maxLines="2"
                     android:textSize="16sp" />
 
                 <TextView
@@ -71,6 +75,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/title"
                     android:layout_toRightOf="@id/poster_image"
+                    android:paddingLeft="16dp"
                     android:text="@string/release_date_text"
                     android:textSize="16sp" />
 
@@ -89,6 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/release_date"
                     android:layout_toRightOf="@id/poster_image"
+                    android:paddingLeft="16dp"
                     android:text="@string/vote_average_label"
                     android:textSize="16sp" />
 
@@ -104,6 +110,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/vote_average"
+                    android:layout_marginLeft="16dp"
                     android:layout_toRightOf="@id/poster_image"
                     android:background="@color/color_mark_favourite">
 
@@ -115,21 +122,31 @@
                         android:padding="16dp"
                         android:text="@string/favourite_text" />
                 </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/title"
+                    android:layout_marginLeft="16dp"
+                    android:layout_toRightOf="@+id/release_date"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/movie_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/movie_description"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/movie_overview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textSize="16sp" />
+                </LinearLayout>
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/movie_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/movie_description"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/movie_overview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:textSize="16sp" />
 
             <View
                 style="@style/Divider"

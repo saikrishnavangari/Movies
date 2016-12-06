@@ -1,5 +1,6 @@
 package sai.com.popularmovies.data;
 
+import net.simonvt.schematic.annotation.AutoIncrement;
 import net.simonvt.schematic.annotation.DataType;
 import net.simonvt.schematic.annotation.NotNull;
 import net.simonvt.schematic.annotation.PrimaryKey;
@@ -13,6 +14,9 @@ import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
 
 public interface MoviesColumns {
     @DataType(INTEGER) @PrimaryKey
+    @AutoIncrement
+    String Column_Id = "_id";
+    @DataType(INTEGER)
     String Column_movieId = "movieId";
 
     @DataType(TEXT) @NotNull
@@ -25,7 +29,7 @@ public interface MoviesColumns {
     String Column_posterPath = "posterPath";
 
     @DataType(TEXT) @NotNull
-    String Column_overview = "overview ";
+    String Column_overview = "overview";
 
     @DataType(INTEGER) @NotNull
     String Column_popularity = "popularity";
