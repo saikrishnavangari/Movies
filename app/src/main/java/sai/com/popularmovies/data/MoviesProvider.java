@@ -16,10 +16,6 @@ public final class MoviesProvider {
             "sai.com.popularmovies.data.MoviesProvider";
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    interface Path {
-        String Movies = "movies";
-    }
-
     private static Uri buildUri(String... paths) {
         Uri.Builder builder = BASE_CONTENT_URI.buildUpon();
         for (String path : paths) {
@@ -28,19 +24,23 @@ public final class MoviesProvider {
         return builder.build();
     }
 
+    interface Path {
+        String Movies = "movies";
+    }
+
     @TableEndpoint(table = MoviesDatabase.Movies)
     public static class Movies {
         @ContentUri(
                 path = Path.Movies,
                 type = "vnd.android.cursor.dir/movies",
-                defaultSort = MoviesColumns.Column_movieId + " ASC")
+                defaultSort = MovieFields.Column_movieId + " ASC")
         public static final Uri CONTENT_URI = buildUri(Path.Movies);
 
         @InexactContentUri(
                 name = "MOVIE_ID",
                 path = Path.Movies + "/#",
                 type = "vnd.android.cursor.item/planet",
-                whereColumn = MoviesColumns.Column_movieId,
+                whereColumn = MovieFields.Column_movieId,
                 pathSegment = 1)
         public static Uri withId(long id) {
             return buildUri(Path.Movies, String.valueOf(id));

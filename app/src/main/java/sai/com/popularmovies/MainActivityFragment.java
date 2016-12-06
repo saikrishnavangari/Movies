@@ -28,7 +28,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import sai.com.popularmovies.Adapters.GridItemImageAdapter;
 import sai.com.popularmovies.Model.Movies;
-import sai.com.popularmovies.data.MoviesColumns;
+import sai.com.popularmovies.data.MovieFields;
 import sai.com.popularmovies.data.MoviesProvider;
 import sai.com.popularmovies.utils.RestApi;
 import sai.com.popularmovies.utils.Utilities;
@@ -157,16 +157,16 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         moviesList.clear();
         while (cursor.moveToNext()) {
             Movies.results movieObject = new Movies.results();
-            movieObject.setId(cursor.getInt(cursor.getColumnIndex(MoviesColumns.Column_movieId)));
-            movieObject.setOriginal_title(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_TITLE)));
-            movieObject.setVote_count(cursor.getInt(cursor.getColumnIndex(MoviesColumns.Column_voteCount)));
-            movieObject.setVote_average(cursor.getInt(cursor.getColumnIndex(MoviesColumns.Column_voteAverage)));
-            movieObject.setBackdrop_path(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_backdropPath)));
-            movieObject.setOriginal_language(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_language)));
-            movieObject.setPopularity(cursor.getInt(cursor.getColumnIndex(MoviesColumns.Column_popularity)));
-            movieObject.setOverview(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_overview)));
-            movieObject.setRelease_date(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_releaseDate)));
-            movieObject.setPoster_path(cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_posterPath)));
+            movieObject.setId(cursor.getInt(cursor.getColumnIndex(MovieFields.Column_movieId)));
+            movieObject.setOriginal_title(cursor.getString(cursor.getColumnIndex(MovieFields.Column_TITLE)));
+            movieObject.setVote_count(cursor.getInt(cursor.getColumnIndex(MovieFields.Column_voteCount)));
+            movieObject.setVote_average(cursor.getInt(cursor.getColumnIndex(MovieFields.Column_voteAverage)));
+            movieObject.setBackdrop_path(cursor.getString(cursor.getColumnIndex(MovieFields.Column_backdropPath)));
+            movieObject.setOriginal_language(cursor.getString(cursor.getColumnIndex(MovieFields.Column_language)));
+            movieObject.setPopularity(cursor.getInt(cursor.getColumnIndex(MovieFields.Column_popularity)));
+            movieObject.setOverview(cursor.getString(cursor.getColumnIndex(MovieFields.Column_overview)));
+            movieObject.setRelease_date(cursor.getString(cursor.getColumnIndex(MovieFields.Column_releaseDate)));
+            movieObject.setPoster_path(cursor.getString(cursor.getColumnIndex(MovieFields.Column_posterPath)));
             moviesList.add(movieObject);
         }
         Log.d(LOG_TAG, "moviesList" + String.valueOf(moviesList.size()));

@@ -12,5 +12,6 @@ public final class MoviesDatabase {
 
     public static final int VERSION = 1;
 
-    @Table(MoviesColumns.class) public static final String Movies = "movies";
+    @Table(MovieFields.class)
+    public static final String Movies = "movies";
 }
