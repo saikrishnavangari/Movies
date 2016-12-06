@@ -1,6 +1,7 @@
 package sai.com.popularmovies.Adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,7 @@ public class GridItemImageAdapter extends ArrayAdapter<results> {
             viewHolder= (ViewHolder) listItemView.getTag();
         }
 
+        Log.d("posterPath", mMoviesList.get(i).getPoster_path());
         //load image into imageView
         Picasso.with(mcontext).load(MainActivity.IMAGE_BASE_URL + "w185/" + mMoviesList.get(i).getPoster_path())
                 .into(viewHolder.moviePoster);
@@ -67,6 +69,10 @@ public class GridItemImageAdapter extends ArrayAdapter<results> {
         return listItemView;
     }
 
+    @Override
+    public void setNotifyOnChange(boolean notifyOnChange) {
+        super.setNotifyOnChange(notifyOnChange);
+    }
 
     static class ViewHolder {
         @BindView(R.id.image_id)

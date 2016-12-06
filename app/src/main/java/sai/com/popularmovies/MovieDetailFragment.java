@@ -39,10 +39,8 @@ import sai.com.popularmovies.utils.Utilities;
  * Created by krrish on 2/11/2016.
  */
 public class MovieDetailFragment extends Fragment {
-    private static String LOG_TAG = MovieDetailFragment.class.getSimpleName();
-    private Movies.results mMovieObject;
-    private String mVideoKeys[];
     public static String MOVIEOBJECT="mMovieObject";
+    private static String LOG_TAG = MovieDetailFragment.class.getSimpleName();
     @BindView(R.id.poster_image)
     ImageView poster_image_IV;
     @BindView(R.id.title)
@@ -62,8 +60,19 @@ public class MovieDetailFragment extends Fragment {
     @BindView(R.id.header_text) TextView header_text;
     @BindView(R.id.favourite_button)
     Button favouriteButton;
+    private Movies.results mMovieObject;
+    private String mVideoKeys[];
 
+    public static MovieDetailFragment newInstance(int index) {
+        MovieDetailFragment f = new MovieDetailFragment();
 
+        // Supply index input as an argument.
+        Bundle args = new Bundle();
+        args.putInt("index", index);
+        f.setArguments(args);
+
+        return f;
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +96,6 @@ public class MovieDetailFragment extends Fragment {
                                        mVideoKeys[i] = videoObject.getKey();
                                        Log.d(LOG_TAG, mVideoKeys[i]);
                                        i++;
-
                                    }
                                }
                                setClicklisteners();
@@ -103,21 +111,23 @@ public class MovieDetailFragment extends Fragment {
     }
 
     private void setClicklisteners() {
-        trailer1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                launchIntent(1);
-            }
-        });
-        trailer2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mVideoKeys.length>1&&mVideoKeys[1]!=null)
-                    launchIntent(2);
-                else
-                    Toast.makeText(getActivity(),"no second trailer for this movie", Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (mMovieObject != null) {
+            trailer1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    launchIntent(1);
+                }
+            });
+            trailer2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mVideoKeys.length > 1 && mVideoKeys[1] != null)
+                        launchIntent(2);
+                    else
+                        Toast.makeText(getActivity(), "no second trailer for this movie", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void loadReview() {
@@ -150,19 +160,12 @@ public class MovieDetailFragment extends Fragment {
         ButterKnife.bind(this, rootview);
 
         Bundle arguments=getArguments();
-        if(arguments!=null){
-            mMovieObject=arguments.getParcelable(MOVIEOBJECT);
-        }
+        if (arguments != null) {
+            mMovieObject = arguments.getParcelable(MOVIEOBJECT);
             loadReview();
             loadVideos();
-        Picasso.with(getActivity()).load(MainActivity.IMAGE_BASE_URL + "w342/" +
-                mMovieObject.getPoster_path()).into(poster_image_IV);
-        title_TV.setText(mMovieObject.getOriginal_title());
-        header_text.setText(mMovieObject.getOriginal_title());
-        release_date_TV.setText(mMovieObject.getRelease_date());
-        vote_average_TV.setText(String.valueOf(mMovieObject.getVote_average()));
-        movie_overview_TV.setText(mMovieObject.getOverview());
-
+            updateView();
+        }
         return rootview;
     }
 
@@ -173,7 +176,7 @@ public class MovieDetailFragment extends Fragment {
             case 1:
                 Intent intent=new Intent
                         (Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + mVideoKeys[trailer_num - 1]));
-                intent.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
             case 2:
@@ -200,7 +203,15 @@ public class MovieDetailFragment extends Fragment {
        }
         }
 
-
+    private void updateView() {
+        Picasso.with(getActivity()).load(MainActivity.IMAGE_BASE_URL + "w342/" +
+                mMovieObject.getPoster_path()).into(poster_image_IV);
+        title_TV.setText(mMovieObject.getOriginal_title());
+        header_text.setText(mMovieObject.getOriginal_title());
+        release_date_TV.setText(mMovieObject.getRelease_date());
+        vote_average_TV.setText(String.valueOf(mMovieObject.getVote_average()));
+        movie_overview_TV.setText(mMovieObject.getOverview());
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -210,6 +221,7 @@ public class MovieDetailFragment extends Fragment {
 
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
@@ -218,33 +230,47 @@ public class MovieDetailFragment extends Fragment {
 
     @OnClick(R.id.favourite_button)
     void favouriteButtonClicked(Button button){
-        if(button.getText().equals(getString(R.string.favourite_text))) {
-            button.setText(R.string.favourite_text_remove);
-            ContentValues values = new ContentValues();
-            values.put(MoviesColumns.Column_movieId, mMovieObject.getId());
-            values.put(MoviesColumns.Column_TITLE, mMovieObject.getTitle());
-            values.put(MoviesColumns.Column_voteCount, mMovieObject.getVote_count());
-            values.put(MoviesColumns.Column_posterPath, mMovieObject.getPoster_path());
-            values.put(MoviesColumns.Column_overview, (mMovieObject.getOverview()).toString());
-            values.put(MoviesColumns.Column_popularity, mMovieObject.getPopularity());
-            values.put(MoviesColumns.Column_voteAverage, mMovieObject.getVote_average());
-            values.put(MoviesColumns.Column_language, mMovieObject.getOriginal_language());
-            values.put(MoviesColumns.Column_backdropPath, mMovieObject.getBackdrop_path());
-            values.put(MoviesColumns.Column_releaseDate, mMovieObject.getRelease_date());
-            getActivity().getContentResolver().insert(MoviesProvider.Movies.CONTENT_URI, values);
-            Cursor cursor=getActivity().getContentResolver().query(MoviesProvider.Movies.CONTENT_URI,null,
-                    null,null,null);
-            while (cursor.moveToNext()){
-                Log.d(LOG_TAG,cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_overview)));
+        if (mMovieObject != null) {
+            if (button.getText().equals(getString(R.string.favourite_text))) {
+                button.setText(R.string.favourite_text_remove);
+                ContentValues values = new ContentValues();
+                values.put(MoviesColumns.Column_movieId, mMovieObject.getId());
+                values.put(MoviesColumns.Column_TITLE, mMovieObject.getTitle());
+                values.put(MoviesColumns.Column_voteCount, mMovieObject.getVote_count());
+                values.put(MoviesColumns.Column_posterPath, mMovieObject.getPoster_path());
+                values.put(MoviesColumns.Column_overview, mMovieObject.getOverview());
+                values.put(MoviesColumns.Column_popularity, mMovieObject.getPopularity());
+                values.put(MoviesColumns.Column_voteAverage, mMovieObject.getVote_average());
+                values.put(MoviesColumns.Column_language, mMovieObject.getOriginal_language());
+                values.put(MoviesColumns.Column_backdropPath, mMovieObject.getBackdrop_path());
+                values.put(MoviesColumns.Column_releaseDate, mMovieObject.getRelease_date());
+                getActivity().getContentResolver().insert(MoviesProvider.Movies.CONTENT_URI, values);
+                Cursor cursor = getActivity().getContentResolver().query(MoviesProvider.Movies.CONTENT_URI, null,
+                        null, null, null);
+                while (cursor.moveToNext()) {
+                    Log.d(LOG_TAG, cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_TITLE)));
+                }
+                cursor.close();
+            } else {
+                button.setText(R.string.favourite_text);
+                long rows = getActivity().getContentResolver().delete(MoviesProvider.Movies.withId(mMovieObject.getId()),
+                        null, null);
+                if (MainActivity.mTwoPane) {
+                    resetviews();
+                }
             }
-            cursor.close();
         }
-        else {
-            button.setText(R.string.favourite_text);
-            long rows=getActivity().getContentResolver().delete(MoviesProvider.Movies.withId(mMovieObject.getId()),
-                   null, null);
-            Log.d(LOG_TAG,String.valueOf(rows));
-        }
+    }
+
+    private void resetviews() {
+
+        poster_image_IV.setImageResource(0);
+        title_TV.setText("");
+        header_text.setText("");
+        release_date_TV.setText("");
+        vote_average_TV.setText("");
+        movie_overview_TV.setText("");
+        movie_review.setText("");
     }
 
 
