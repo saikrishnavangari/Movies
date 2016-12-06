@@ -30,7 +30,7 @@ import retrofit2.Response;
 import sai.com.popularmovies.Model.Movies;
 import sai.com.popularmovies.Model.Reviews;
 import sai.com.popularmovies.Model.Videos;
-import sai.com.popularmovies.data.MoviesColumns;
+import sai.com.popularmovies.data.MovieFields;
 import sai.com.popularmovies.data.MoviesProvider;
 import sai.com.popularmovies.utils.RestApi;
 import sai.com.popularmovies.utils.Utilities;
@@ -234,21 +234,21 @@ public class MovieDetailFragment extends Fragment {
             if (button.getText().equals(getString(R.string.favourite_text))) {
                 button.setText(R.string.favourite_text_remove);
                 ContentValues values = new ContentValues();
-                values.put(MoviesColumns.Column_movieId, mMovieObject.getId());
-                values.put(MoviesColumns.Column_TITLE, mMovieObject.getTitle());
-                values.put(MoviesColumns.Column_voteCount, mMovieObject.getVote_count());
-                values.put(MoviesColumns.Column_posterPath, mMovieObject.getPoster_path());
-                values.put(MoviesColumns.Column_overview, mMovieObject.getOverview());
-                values.put(MoviesColumns.Column_popularity, mMovieObject.getPopularity());
-                values.put(MoviesColumns.Column_voteAverage, mMovieObject.getVote_average());
-                values.put(MoviesColumns.Column_language, mMovieObject.getOriginal_language());
-                values.put(MoviesColumns.Column_backdropPath, mMovieObject.getBackdrop_path());
-                values.put(MoviesColumns.Column_releaseDate, mMovieObject.getRelease_date());
+                values.put(MovieFields.Column_movieId, mMovieObject.getId());
+                values.put(MovieFields.Column_TITLE, mMovieObject.getTitle());
+                values.put(MovieFields.Column_voteCount, mMovieObject.getVote_count());
+                values.put(MovieFields.Column_posterPath, mMovieObject.getPoster_path());
+                values.put(MovieFields.Column_overview, mMovieObject.getOverview());
+                values.put(MovieFields.Column_popularity, mMovieObject.getPopularity());
+                values.put(MovieFields.Column_voteAverage, mMovieObject.getVote_average());
+                values.put(MovieFields.Column_language, mMovieObject.getOriginal_language());
+                values.put(MovieFields.Column_backdropPath, mMovieObject.getBackdrop_path());
+                values.put(MovieFields.Column_releaseDate, mMovieObject.getRelease_date());
                 getActivity().getContentResolver().insert(MoviesProvider.Movies.CONTENT_URI, values);
                 Cursor cursor = getActivity().getContentResolver().query(MoviesProvider.Movies.CONTENT_URI, null,
                         null, null, null);
                 while (cursor.moveToNext()) {
-                    Log.d(LOG_TAG, cursor.getString(cursor.getColumnIndex(MoviesColumns.Column_TITLE)));
+                    Log.d(LOG_TAG, cursor.getString(cursor.getColumnIndex(MovieFields.Column_TITLE)));
                 }
                 cursor.close();
             } else {
